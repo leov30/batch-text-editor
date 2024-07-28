@@ -54,7 +54,28 @@ exit /b
 	set /p "_line=Enter the # of the line: "
 	set /p "_txt=Enter new text for the line: "
 	
-	type nul>text%_file%.txt
-	for /l %%g in (0,1,%_num%) do 
+	type nul>temp.txt
+	set /a _num=%_line%-1
+	set /a _num2=%_line%
+	
+	setlocal enabledelayedexpansion
+	set _count=0
+	for /f "delims=" %%g in (text%_file%.txt) do (
+		echo %%g>>temp.txt
+		set /a _count+=1
+		echo !_count!
+		if !_count! equ !_num! goto :go_next
+	)
+	setlocal disabledeleyedexpansion
+	
+	:go_next
+	echo !_txt!>>temp.txt
+	
+	
+	for /f "skip=%_num2% delims=" %%g in (text%_file%.txt) do (
+		echo %%g>>temp.txt
+	)
+	
+	del text%_file%.txt & ren temp.txt text%_file%.txt
 
 exit /b
